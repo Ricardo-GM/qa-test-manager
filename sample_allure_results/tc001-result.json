@@ -1,0 +1,26 @@
+{
+  "uuid": "8f3b2a1c-5d4e-4f3a-9b1c-8e7d6c5b4a3f",
+  "name": "Carga exitosa de datos generales válidos",
+  "fullName": "HU13/solicitud_datos_generales.feature#Carga exitosa de datos generales válidos",
+  "status": "passed",
+  "stage": "finished",
+  "start": 1727932000000,
+  "stop": 1727932003850,
+  "labels": [
+    { "name": "feature", "value": "Solicitud de Datos Generales" },
+    { "name": "tag", "value": "smoke" },
+    { "name": "tag", "value": "alta" },
+    { "name": "tag", "value": "TC-001" }
+  ],
+  "steps": [
+    { "name": "Dado que el usuario inicia sesión con credenciales de operador", "status": "passed", "stage": "finished" },
+    { "name": "Y accede al formulario de nueva solicitud", "status": "passed", "stage": "finished" },
+    { "name": "Dado que el usuario se encuentra en la pestaña \"Datos Generales\"", "status": "passed", "stage": "finished" },
+    { "name": "Cuando completa el CUIT \"30-71234567-8\"", "status": "passed", "stage": "finished" },
+    { "name": "Y selecciona el tipo societario \"Sociedad Anónima\"", "status": "passed", "stage": "finished" },
+    { "name": "Y completa la razón social \"Molinos Agro S.A.\"", "status": "passed", "stage": "finished" },
+    { "name": "Y presiona el botón \"Guardar y Continuar\"", "status": "passed", "stage": "finished" },
+    { "name": "Entonces el sistema muestra el mensaje de confirmación \"Datos guardados correctamente\"", "status": "passed", "stage": "finished" },
+    { "name": "Y el estado de la solicitud cambia a \"En Revisión\"", "status": "passed", "stage": "finished" }
+  ]
+}

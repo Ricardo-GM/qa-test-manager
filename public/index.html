@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local QA - Suite de Gestión de Pruebas</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" href="favicon.svg">
+  <!-- Google Fonts: Newsreader (Editorial Serif), Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="css/style.css?v=1.0.5">
+</head>
+<body>
+  <!-- Main Container -->
+  <div class="app-container">
+    <!-- Header Navigation -->
+    <header class="glass-header">
+      <div class="brand">
+        <div class="brand-logo-wrap" title="Local QA Suite">
+          <svg class="brand-logo-svg" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect class="logo-bg" x="0.5" y="0.5" width="35" height="35" rx="8" fill="#111111" stroke="#111111"/>
+            <path class="logo-check-path" d="M11 18.5L15.5 23L25 12" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Local QA</h1>
+          <span class="subtext">Editorial Workspace <kbd class="kbd-sm">v1.2</kbd></span>
+        </div>
+      </div>
+
+      <nav class="nav-actions">
+        <button id="btn-tab-runs" class="btn btn-secondary active">
+          <i data-lucide="play-circle"></i> Ejecuciones
+        </button>
+        <button id="btn-tab-library" class="btn btn-secondary">
+          <i data-lucide="database"></i> Biblioteca
+        </button>
+        <button id="btn-tab-bugs" class="btn btn-secondary">
+          <i data-lucide="bug"></i> Bugs
+        </button>
+        <button id="btn-open-import" class="btn btn-secondary">
+          <i data-lucide="file-spreadsheet"></i> Importar Excel
+        </button>
+        <button id="btn-open-import-feature" class="btn btn-secondary">
+          <i data-lucide="file-code"></i> Importar .feature
+        </button>
+        <button id="btn-open-new-run" class="btn btn-primary">
+          <i data-lucide="plus"></i> Nueva Ejecución
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- VIEW 1: TEST RUNS DASHBOARD -->
+      <section id="view-runs" class="view-section active">
+        <div class="section-title-bar">
+          <div>
+            <h2>Ejecuciones</h2>
+            <p>Selecciona una ejecución activa para evaluar casos o exportar reporte.</p>
+          </div>
+        </div>
+
+        <div id="runs-grid" class="cards-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- VIEW 2: ACTIVE EXECUTION DETAIL -->
+      <section id="view-execution-detail" class="view-section hidden">
+        <div class="execution-header glass-panel">
+          <div class="exec-info">
+            <button id="btn-back-to-runs" class="btn btn-icon btn-secondary">
+              <i data-lucide="arrow-left"></i>
+            </button>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h2 id="exec-title">Cargando ejecución...</h2>
+                <button id="btn-edit-run-name" class="btn btn-icon btn-secondary" style="padding: 2px; border: none; background: transparent;" title="Editar Nombre/Entorno">
+                  <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
+                </button>
+              </div>
+              <span id="exec-meta" class="subtext">QA Environment</span>
+            </div>
+          </div>
+
+          <div class="exec-stats-bar">
+            <div class="stat-badge pass"><i data-lucide="check-circle"></i> <span id="stat-pass">0</span> Pass</div>
+            <div class="stat-badge fail"><i data-lucide="x-circle"></i> <span id="stat-fail">0</span> Fail</div>
+            <div class="stat-badge blocked"><i data-lucide="alert-triangle"></i> <span id="stat-blocked">0</span> Blocked</div>
+            <div class="stat-badge desestimado"><i data-lucide="circle-slash"></i> <span id="stat-desestimado">0</span> Desestimado</div>
+            <div class="stat-badge untested"><i data-lucide="minus-circle"></i> <span id="stat-untested">0</span> Untested</div>
+            <button id="btn-open-import-allure" class="btn btn-secondary" style="color: #4f46e5; border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.08);" title="Ingestar resultados desde Allure Report">
+              <i data-lucide="activity"></i> Importar Allure
+            </button>
+            <button id="btn-open-add-general-bug" class="btn btn-secondary btn-open-add-general-bug" style="color: #991b1b; border-color: #fca5a5; background: #fff1f2;">
+              <i data-lucide="bug"></i> + Bug General
+            </button>
+            <button id="btn-download-pdf" class="btn btn-success">
+              <i data-lucide="file-text"></i> Descargar PDF
+            </button>
+            <button id="btn-delete-run" class="btn btn-secondary" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1);">
+              <i data-lucide="trash-2"></i> Eliminar
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar glass-panel-sm">
+          <div class="search-input-wrap">
+            <i data-lucide="search"></i>
+            <input type="text" id="input-search-case" placeholder="Buscar por número o título de caso...">
+          </div>
+
+          <div class="filter-group">
+            <label>Estado:</label>
+            <select id="select-filter-status">
+              <option value="ALL">Todos</option>
+              <option value="Pass">Pass</option>
+              <option value="Fail">Fail</option>
+              <option value="Blocked">Blocked</option>
+              <option value="Desestimado">Desestimado</option>
+              <option value="Untested">Untested</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Ordenar por:</label>
+            <select id="select-sort-exec-field">
+              <option value="status">Estado</option>
+              <option value="number" selected>Número de Caso</option>
+              <option value="date">Fecha de Subida</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Orden:</label>
+            <select id="select-sort-exec-dir">
+              <option value="asc">Ascendente (1→N / Más Antiguo)</option>
+              <option value="desc">Descendente (N→1 / Más Reciente)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Test cases list for execution -->
+        <div id="cases-execution-list" class="cases-list-container">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- VIEW 3: TEST CASE LIBRARY -->
+      <section id="view-library" class="view-section hidden">
+        <div class="section-title-bar">
+          <div>
+            <h2>Biblioteca de Grupos de Casos</h2>
+            <p>Casos de prueba agrupados por archivo importado.</p>
+          </div>
+        </div>
+
+        <!-- Library Filter & Sort Bar -->
+        <div class="filter-bar glass-panel-sm" style="margin-bottom: 20px;">
+          <div class="search-input-wrap">
+            <i data-lucide="search"></i>
+            <input type="text" id="input-search-library" placeholder="Buscar grupo, número o título de caso...">
+          </div>
+
+          <div class="filter-group">
+            <label>Filtrar Grupo:</label>
+            <select id="select-filter-library-group">
+              <option value="all">Todos los grupos</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Ordenar por:</label>
+            <select id="select-sort-library-field">
+              <option value="status">Estado</option>
+              <option value="number">Número de Caso</option>
+              <option value="date">Fecha de Subida</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Orden:</label>
+            <select id="select-sort-library-dir">
+              <option value="asc">Ascendente (1→N / Más Antiguo)</option>
+              <option value="desc">Descendente (N→1 / Más Reciente)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="library-grid" class="library-cards-container">
+          <!-- Dynamically populated by Groups -->
+        </div>
+      </section>
+
+      <!-- VIEW 4: BUGS MODULE -->
+      <section id="view-bugs" class="view-section hidden">
+        <div class="section-title-bar">
+          <div>
+            <h2>Módulo de Bugs</h2>
+            <p>Monitoreo y filtrado centralizado de defectos reportados por responsable.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button id="btn-open-new-bug-module" class="btn btn-primary">
+              <i data-lucide="plus"></i> Registrar Bug
+            </button>
+            <button id="btn-download-bugs-pdf" class="btn btn-success">
+              <i data-lucide="file-text"></i> Descargar Reporte PDF de Bugs
+            </button>
+          </div>
+        </div>
+
+        <!-- Bugs Filter Bar -->
+        <div class="filter-bar glass-panel-sm" style="margin-bottom: 20px;">
+          <div class="search-input-wrap">
+            <i data-lucide="search"></i>
+            <input type="text" id="input-search-bugs" placeholder="Buscar bug por título o descripción...">
+          </div>
+
+          <div class="filter-group">
+            <label>Historia de usuario:</label>
+            <select id="select-filter-bug-group">
+              <option value="ALL">Todas las Historias</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Ejecución:</label>
+            <select id="select-filter-bug-run">
+              <option value="ALL">Todas las ejecuciones</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Asignado A:</label>
+            <select id="select-filter-bug-assignee">
+              <option value="ALL">Todas las personas</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Estado:</label>
+            <select id="select-filter-bug-status">
+              <option value="ALL">Todos los estados</option>
+              <option value="Abierto">Abierto</option>
+              <option value="En Progreso">En Progreso</option>
+              <option value="Resuelto">Resuelto</option>
+              <option value="Cerrado">Cerrado</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Severidad:</label>
+            <select id="select-filter-bug-severity">
+              <option value="ALL">Todas</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="bugs-grid" class="cards-grid">
+          <!-- Dynamically populated by Bugs -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: IMPORT EXCEL -->
+  <div id="modal-import" class="modal-backdrop hidden">
+    <div class="modal-window glass-panel">
+      <div class="modal-header">
+        <h3><i data-lucide="file-up"></i> Importar Casos desde Excel</h3>
+        <button class="btn-close-modal btn-icon"><i data-lucide="x"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-desc">Sube tu archivo <code>.xlsx</code> con las columnas: <strong>Número de caso de prueba, Titulo, Resumen, Cucumber, Prioridad</strong>.</p>
+        
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="input-group-name">Nombre del Grupo de Casos (Opcional):</label>
+          <input type="text" id="input-group-name" placeholder="Ej: Regresión Módulo Registro - Sprint 1 (Por defecto toma nombre del archivo)">
+        </div>
+
+        <div id="dropzone-excel" class="dropzone">
+          <i data-lucide="upload-cloud" class="dropzone-icon"></i>
+          <p>Arrastra tu archivo <code>.xlsx</code> aquí o <span class="highlight">haz clic para buscar</span></p>
+          <input type="file" id="file-input-excel" accept=".xlsx, .xls" hidden>
+        </div>
+
+        <div id="import-preview" class="file-preview hidden">
+          <i data-lucide="file-spreadsheet"></i>
+          <span id="excel-file-name">archivo.xlsx</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-close-modal">Cancelar</button>
+        <button id="btn-submit-import" class="btn btn-primary" disabled>
+          <i data-lucide="upload"></i> Procesar E Importar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORT FEATURE (BDD Gherkin) -->
+  <div id="modal-import-feature" class="modal-backdrop hidden">
+    <div class="modal-window glass-panel" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3><i data-lucide="file-code"></i> Importar Casos desde .feature (Gherkin BDD)</h3>
+        <button class="btn-close-modal btn-icon"><i data-lucide="x"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-desc">Sube uno o varios archivos <code>.feature</code> (admite sintaxis en Español e Inglés) o pega texto Gherkin directamente.</p>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+          <button type="button" id="tab-feature-upload" class="btn btn-secondary active" style="flex: 1; font-size: 0.82rem; padding: 6px 10px;">
+            <i data-lucide="upload-cloud"></i> Subir Archivo(s)
+          </button>
+          <button type="button" id="tab-feature-paste" class="btn btn-secondary" style="flex: 1; font-size: 0.82rem; padding: 6px 10px;">
+            <i data-lucide="edit-3"></i> Pegar Texto Gherkin
+          </button>
+        </div>
+
+        <div id="panel-feature-upload">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="input-feature-group-name">Nombre del Grupo / Característica (Opcional):</label>
+            <input type="text" id="input-feature-group-name" placeholder="Por defecto toma el nombre de la Característica o archivo">
+          </div>
+
+          <div id="dropzone-feature" class="dropzone">
+            <i data-lucide="upload-cloud" class="dropzone-icon"></i>
+            <p>Arrastra archivo(s) <code>.feature</code> aquí o <span class="highlight">haz clic para buscar</span></p>
+            <input type="file" id="file-input-feature" accept=".feature,.txt" multiple hidden>
+          </div>
+
+          <div id="feature-files-preview" class="file-preview hidden" style="flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 10px; max-height: 120px; overflow-y: auto;">
+            <!-- Lista de archivos seleccionados -->
+          </div>
+        </div>
+
+        <div id="panel-feature-paste" class="hidden">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label for="input-feature-paste-group">Nombre del Grupo (Opcional):</label>
+            <input type="text" id="input-feature-paste-group" placeholder="Ej: Solicitud de Datos Generales">
+          </div>
+          <div class="form-group">
+            <label for="textarea-feature-content">Texto Gherkin (.feature):</label>
+            <textarea id="textarea-feature-content" rows="9" style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;" placeholder="Característica: Solicitud de Datos Generales&#10;  Escenario: Carga exitosa de datos válidos&#10;    Dado que el usuario accede al formulario...&#10;    Cuando completa el CUIT...&#10;    Entonces se visualiza mensaje de éxito"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-close-modal">Cancelar</button>
+        <button id="btn-submit-import-feature" class="btn btn-primary" disabled>
+          <i data-lucide="upload"></i> Procesar E Importar .feature
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORT ALLURE REPORT RESULTS -->
+  <div id="modal-import-allure" class="modal-backdrop hidden">
+    <div class="modal-window glass-panel" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3><i data-lucide="activity"></i> Importar Resultados de Allure Report</h3>
+        <button class="btn-close-modal btn-icon"><i data-lucide="x"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-desc">Sube los archivos <code>*-result.json</code> de la carpeta <code>allure-results</code> o <code>suites.json</code> de <code>allure-report/data</code>. Se sincronizarán automáticamente con los casos de esta corrida activa.</p>
+
+        <div id="dropzone-allure" class="dropzone">
+          <i data-lucide="upload-cloud" class="dropzone-icon"></i>
+          <p>Arrastra archivos JSON de Allure aquí o <span class="highlight">haz clic para seleccionarlos</span></p>
+          <input type="file" id="file-input-allure" accept=".json" multiple hidden>
+        </div>
+
+        <div id="allure-files-preview" class="file-preview hidden" style="flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 10px; max-height: 140px; overflow-y: auto;">
+          <!-- Lista de archivos seleccionados -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-close-modal">Cancelar</button>
+        <button id="btn-submit-import-allure" class="btn btn-primary" disabled>
+          <i data-lucide="check-circle-2"></i> Procesar e Ingestar Resultados
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW TEST RUN -->
+  <div id="modal-new-run" class="modal-backdrop hidden">
+    <div class="modal-window glass-panel">
+      <div class="modal-header">
+        <h3><i data-lucide="play-circle"></i> Crear Nueva Ejecución de Pruebas</h3>
+        <button class="btn-close-modal btn-icon"><i data-lucide="x"></i></button>
+      </div>
+
+      <form id="form-new-run">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="input-run-name">Nombre de la Ejecución / Sprint:</label>
+            <input type="text" id="input-run-name" placeholder="Ej: Regresión Módulo Registro - Sprint 12" required>
+          </div>
+
+          <div class="form-group">
+            <label for="input-run-env">Entorno de Pruebas:</label>
+            <select id="input-run-env">
+              <option value="QA">QA / Testing</option>
+              <option value="Staging">Staging / Pre-prod</option>
+              <option value="Producción">Producción</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-top: 14px;">
+            <label for="select-run-group">Grupo de Casos de Prueba a Ejecutar:</label>
+            <select id="select-run-group" required>
+              <option value="all">Todos los grupos de casos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check"></i> Iniciar Ejecución
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: LIGHTBOX EVIDENCE PREVIEW -->
+  <div id="modal-lightbox" class="modal-backdrop hidden">
+    <div class="modal-window lightbox-window glass-panel">
+      <div class="modal-header">
+        <div class="lightbox-header-info">
+          <h3 id="lightbox-title">Evidencia de Captura</h3>
+          <span id="lightbox-counter" class="badge-counter">1 / 1</span>
+        </div>
+        <button class="btn-close-modal btn-icon"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body lightbox-body">
+        <button id="lightbox-btn-prev" class="lightbox-nav-btn prev" title="Anterior (Flecha izquierda)">
+          <i data-lucide="chevron-left"></i>
+        </button>
+        <img id="lightbox-img" src="" alt="Evidencia">
+        <button id="lightbox-btn-next" class="lightbox-nav-btn next" title="Siguiente (Flecha derecha)">
+          <i data-lucide="chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW / EDIT BUG -->
+  <div id="modal-new-bug" class="modal-backdrop hidden">
+    <div class="modal-window modal-lg glass-panel">
+      <div class="modal-header">
+        <h3 id="bug-modal-title"><i data-lucide="bug"></i> Registrar Nuevo Bug</h3>
+        <button class="btn-close-modal btn-icon"><i data-lucide="x"></i></button>
+      </div>
+
+      <form id="form-new-bug">
+        <input type="hidden" id="bug-edit-id">
+        <input type="hidden" id="bug-result-id">
+
+        <div class="modal-body form-grid">
+          <!-- Título del Bug (Ancho completo) -->
+          <div class="form-group col-span-2">
+            <label for="input-bug-title">Título del Bug / Defecto:</label>
+            <input type="text" id="input-bug-title" placeholder="Ej: Error 500 al presionar botón de pago" required>
+          </div>
+
+          <!-- Jornada y Caso Afiliado (Dos Columnas) -->
+          <div class="form-group" id="group-bug-run">
+            <label for="select-bug-run-id">Jornada de Ejecución:</label>
+            <select id="select-bug-run-id" required>
+              <option value="">Selecciona una ejecución...</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="group-bug-case">
+            <label for="select-bug-case-id">Caso de Prueba (Opcional):</label>
+            <select id="select-bug-case-id">
+              <option value="">Ninguno - Defecto General de la Ejecución</option>
+            </select>
+          </div>
+
+          <!-- Descripción del Problema (Ancho completo) -->
+          <div class="form-group col-span-2">
+            <label for="input-bug-desc">Descripción del Problema:</label>
+            <textarea id="input-bug-desc" rows="2" placeholder="Resumen general del problema detectado..."></textarea>
+          </div>
+
+          <!-- Pasos de Reproducción y Resultado Esperado (Dos Columnas) -->
+          <div class="form-group">
+            <label for="input-bug-reproduction">Pasos de Reproducción:</label>
+            <textarea id="input-bug-reproduction" rows="4" placeholder="1. Ingresar al módulo X&#10;2. Completar campo Y con Z&#10;3. Hacer clic en Guardar..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="input-bug-expected">Resultado Esperado:</label>
+            <textarea id="input-bug-expected" rows="4" placeholder="Describir lo que debería suceder al realizar la prueba..."></textarea>
+          </div>
+
+          <!-- Asignado, Severidad y Estado (Fila dividida en 3 columnas) -->
+          <div class="form-group col-span-2 form-row-three">
+            <div class="form-group-item">
+              <label for="input-bug-assigned">Asignado A:</label>
+              <input type="text" id="input-bug-assigned" placeholder="Ej: Juan Pérez" list="assignees-list" required>
+              <datalist id="assignees-list"></datalist>
+            </div>
+
+            <div class="form-group-item">
+              <label for="select-bug-severity">Severidad / Prioridad:</label>
+              <select id="select-bug-severity">
+                <option value="Alta">Alta</option>
+                <option value="Media" selected>Media</option>
+                <option value="Baja">Baja</option>
+              </select>
+            </div>
+
+            <div class="form-group-item">
+              <label for="select-bug-status">Estado:</label>
+              <select id="select-bug-status">
+                <option value="Abierto">Abierto</option>
+                <option value="En Progreso">En Progreso</option>
+                <option value="Resuelto">Resuelto</option>
+                <option value="Cerrado">Cerrado</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Evidencia (Ancho completo) -->
+          <div class="form-group col-span-2">
+            <label>Evidencia (Pega imágenes con <kbd>Ctrl</kbd> + <kbd>V</kbd>):</label>
+            <div id="bug-evidence-container" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+              <!-- Se renderizarán aquí las imágenes subidas -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check"></i> Guardar Bug
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: HIG PRESENTATION DIALOG (Apple HIG Alert & Action Sheet) -->
+  <div id="modal-hig-alert" class="modal-backdrop hidden">
+    <div class="modal-window hig-alert-window">
+      <div class="hig-alert-body">
+        <div class="hig-alert-icon" id="hig-alert-icon"><i data-lucide="alert-triangle"></i></div>
+        <h3 id="hig-alert-title">Título del Diálogo</h3>
+        <p id="hig-alert-message">Mensaje informativo o de confirmación de acción crítica.</p>
+      </div>
+      <div class="hig-alert-actions" id="hig-alert-actions">
+        <button id="hig-btn-cancel" class="btn btn-secondary">Cancelar</button>
+        <button id="hig-btn-confirm" class="btn btn-primary">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT TEST RUN -->
+  <div id="modal-edit-run" class="modal-backdrop hidden">
+    <div class="modal-window glass-panel" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3><i data-lucide="edit-3"></i> Editar Ejecución</h3>
+        <button class="btn-close-modal btn-icon"><i data-lucide="x"></i></button>
+      </div>
+      <form id="form-edit-run">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="input-edit-run-name">Nombre de la Ejecución:</label>
+            <input type="text" id="input-edit-run-name" required>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="input-edit-run-env">Entorno (QA, Staging, etc.):</label>
+            <input type="text" id="input-edit-run-env" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-close-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check"></i> Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

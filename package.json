@@ -1,0 +1,28 @@
+{
+  "name": "qa-test-manager",
+  "version": "1.0.0",
+  "description": "Herramienta local de gestión de pruebas QA, importación de Excel y reportes PDF.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch --watch-path=. server.js",
+    "sync:fase2": "node scripts/sync_fase2_allure.js",
+    "test": "node test_mvc_verification.js && node test_e2e_api.js"
+  },
+  "keywords": [
+    "qa",
+    "testing",
+    "gherkin",
+    "cucumber",
+    "excel",
+    "pdf"
+  ],
+  "author": "Antigravity AI",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "pdfkit": "^0.15.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  }
+}
